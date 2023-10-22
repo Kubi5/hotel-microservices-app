@@ -3,9 +3,9 @@ package com.kubis.microservices.customers.model;
 import com.kubis.microservices.customers.utils.Security;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
-import org.jetbrains.annotations.NotNull;
+import jakarta.validation.constraints.Size;
 
 @Data
 @Builder
