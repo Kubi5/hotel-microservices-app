@@ -1,0 +1,18 @@
+server:
+  port: 8080
+  error:
+    include-message: always
+spring:
+  application:
+    name: ms-customers
+  jpa:
+    database: POSTGRESQL
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+  datasource:
+    platform: postgres
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: fkubis
+    password: fkubis
+    driver-class-name: org.postgresql.Driver
