@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/app/ms-customers/customers.iml" filepath="$PROJECT_DIR$/app/ms-customers/customers.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/hotel-microservices-app.iml" filepath="$PROJECT_DIR$/app/hotel-microservices-app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/ms-rooms/rooms.iml" filepath="$PROJECT_DIR$/app/ms-rooms/rooms.iml" />
     </modules>
   </component>
 </project>

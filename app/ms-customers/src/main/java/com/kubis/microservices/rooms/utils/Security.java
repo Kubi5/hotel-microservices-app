@@ -1,4 +1,4 @@
-package com.kubis.microservices.customers.utils;
+package com.kubis.microservices.rooms.utils;
 
 
 import org.springframework.security.crypto.bcrypt.BCrypt;

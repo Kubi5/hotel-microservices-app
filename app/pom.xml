@@ -10,6 +10,7 @@
 
     <modules>
         <module>ms-customers</module>
+        <module>ms-rooms</module>
     </modules>
 
     <build>

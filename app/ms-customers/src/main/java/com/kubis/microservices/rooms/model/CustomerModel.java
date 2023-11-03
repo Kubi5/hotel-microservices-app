@@ -1,6 +1,6 @@
-package com.kubis.microservices.customers.model;
+package com.kubis.microservices.rooms.model;
 
-import com.kubis.microservices.customers.utils.Security;
+import com.kubis.microservices.rooms.utils.Security;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.NotNull;
@@ -18,7 +18,7 @@ public class CustomerModel {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
     @NotNull
-    @Pattern(regexp = Security.EMAIL_REGEX, message = "Incorrect email! Try again!")
+    @Pattern(regexp = Security.EMAIL_REGEX, message = "Entered email is in the wrong format")
     private String email;
     @Size(min = 5)
     @NotNull

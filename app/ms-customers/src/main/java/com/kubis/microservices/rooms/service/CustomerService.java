@@ -1,9 +1,9 @@
-package com.kubis.microservices.customers.service;
+package com.kubis.microservices.rooms.service;
 
-import com.kubis.microservices.customers.model.CustomerModel;
-import com.kubis.microservices.customers.repository.CustomerRepository;
-import com.kubis.microservices.customers.request.CustomerRequest;
-import com.kubis.microservices.customers.utils.Security;
+import com.kubis.microservices.rooms.model.CustomerModel;
+import com.kubis.microservices.rooms.repository.CustomerRepository;
+import com.kubis.microservices.rooms.request.CustomerRequest;
+import com.kubis.microservices.rooms.utils.Security;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

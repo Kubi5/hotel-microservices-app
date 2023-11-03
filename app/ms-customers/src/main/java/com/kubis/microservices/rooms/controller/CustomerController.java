@@ -1,11 +1,11 @@
-package com.kubis.microservices.customers.controller;
+package com.kubis.microservices.rooms.controller;
 
 
-import com.kubis.microservices.customers.model.CustomerModel;
-import com.kubis.microservices.customers.request.CustomerRequest;
-import com.kubis.microservices.customers.response.CustomerResponse;
-import com.kubis.microservices.customers.service.CustomerService;
-import com.kubis.microservices.customers.utils.Security;
+import com.kubis.microservices.rooms.model.CustomerModel;
+import com.kubis.microservices.rooms.request.CustomerRequest;
+import com.kubis.microservices.rooms.response.CustomerResponse;
+import com.kubis.microservices.rooms.service.CustomerService;
+import com.kubis.microservices.rooms.utils.Security;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
@@ -26,8 +26,8 @@ private final CustomerService customerService;
         Long customerId = customerService.addCustomer(request);
         log.info("New customer with email: '" + request.getEmail() + "' was added");
 
-        return new ResponseEntity<>(new CustomerResponse(customerId, request.getFirstName(),
-                request.getLastName(), request.getPhoneNumber(), request.getEmail(), Security.hashPassword(request.getPassword())),
+        return new ResponseEntity<>(new CustomerResponse(customerId, request.getEmail(),
+                Security.hashPassword(request.getPassword()), request.getFirstName(), request.getLastName(), request.getPhoneNumber()),
                 HttpStatus.CREATED);
     }
 

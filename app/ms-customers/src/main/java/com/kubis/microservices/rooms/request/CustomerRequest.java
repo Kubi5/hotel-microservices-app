@@ -1,18 +1,16 @@
-package com.kubis.microservices.customers.response;
+package com.kubis.microservices.rooms.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
-@AllArgsConstructor
 @Getter
 @Setter
-public class CustomerResponse {
-    private long id;
+@AllArgsConstructor
+public class CustomerRequest {
     private String email;
-    private String hashedPassword;
+    private String password;
     private String firstName;
     private String lastName;
     private String phoneNumber;
-
 }
