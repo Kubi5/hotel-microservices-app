@@ -27,7 +27,7 @@ private final RoomService roomService;
         log.info("New room with id: " + roomId + " was added");
 
         return new ResponseEntity<>(new RoomResponse(roomId, request.getMaxPeopleNumber(),
-                request.getPrice(), request.getAvailableBeds(), request.isBathroomPrivate(),
+                request.getPrice(), request.getAvailableBeds(), request.getIsBathroomPrivate(),
                 request.getAdditionalAmenities()), HttpStatus.CREATED);
     }
 

@@ -3,8 +3,10 @@ package com.kubis.microservices.rooms.controller;
 
 import com.kubis.microservices.rooms.model.CustomerModel;
 import com.kubis.microservices.rooms.request.CustomerRequest;
+import com.kubis.microservices.rooms.request.LoginRequest;
 import com.kubis.microservices.rooms.response.CustomerResponse;
 import com.kubis.microservices.rooms.service.CustomerService;
+import com.kubis.microservices.rooms.utils.JwtUtil;
 import com.kubis.microservices.rooms.utils.Security;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -20,6 +22,7 @@ import java.util.Optional;
 @Log4j2
 public class CustomerController {
 private final CustomerService customerService;
+private final JwtUtil jwtUtil;
 
     @PostMapping("/register")
     public ResponseEntity<CustomerResponse> registerCustomer(@RequestBody CustomerRequest request){
@@ -27,8 +30,17 @@ private final CustomerService customerService;
         log.info("New customer with email: '" + request.getEmail() + "' was added");
 
         return new ResponseEntity<>(new CustomerResponse(customerId, request.getEmail(),
-                Security.hashPassword(request.getPassword()), request.getFirstName(), request.getLastName(), request.getPhoneNumber()),
-                HttpStatus.CREATED);
+                Security.hashPassword(request.getPassword()), request.getFirstName(), request.getLastName(), request.getPhoneNumber(),
+                request.getRole()), HttpStatus.CREATED);
+    }
+    @PostMapping("/login")
+    public ResponseEntity<String> verifyLoginData(@RequestBody LoginRequest request){
+        if(customerService.customerDataCorrect(request.getEmail(), request.getPassword())){
+            String token = jwtUtil.generateToken(request.getEmail());
+            return new ResponseEntity<>(token, HttpStatus.CREATED);
+
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     @GetMapping("/customers")

@@ -1,11 +1,15 @@
 package com.kubis.microservices.rooms.model;
 
 import com.kubis.microservices.rooms.utils.Security;
-import jakarta.persistence.*;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.NotNull;
+
 import lombok.*;
-import jakarta.validation.constraints.Size;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.bind.DefaultValue;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
 @Data
 @Builder
@@ -29,6 +33,8 @@ public class CustomerModel {
     private String lastName;
     @NotNull
     private String phoneNumber;
+
+    private String role;
 
 
 }

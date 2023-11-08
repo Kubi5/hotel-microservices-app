@@ -1,10 +1,10 @@
 package com.kubis.microservices.rooms.model;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
-import lombok.*;
-import org.springframework.beans.factory.annotation.Value;
 
+import lombok.*;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Data
@@ -22,9 +22,11 @@ public class RoomModel {
     @NotNull
     private double price;
     @NotNull
+    @ElementCollection
     private List<String> availableBeds;
-    private boolean isBathroomPrivate;
-
+    @NotNull
+    private Boolean isBathroomPrivate;
+    @ElementCollection
     private List<String> additionalAmenities;
 
 

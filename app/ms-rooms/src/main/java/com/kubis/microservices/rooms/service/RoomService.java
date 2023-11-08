@@ -20,7 +20,7 @@ public class RoomService {
                 .maxPeopleNumber(request.getMaxPeopleNumber())
                 .price(request.getPrice())
                 .availableBeds(request.getAvailableBeds())
-                .isBathroomPrivate(request.isBathroomPrivate())
+                .isBathroomPrivate(request.getIsBathroomPrivate())
                 .additionalAmenities(request.getAdditionalAmenities())
                 .build();
         return roomRepository.save(roomModel).getId();
@@ -51,12 +51,8 @@ public class RoomService {
             if(request.getAvailableBeds() != null){
                 roomToUpdate.get().setAvailableBeds(request.getAvailableBeds());
             }
-            //TODO
-            //Jeśli chce sie zmienic flage z True -> False nie przekazuj nic w request
-            //Jeśli z False -> True to przeslij to pole
-            //Jest problem z rozróżnieniem false przekazanym w JSONIE jako pole a nie przesłanym wogole (defaultowo = false)
-            if(request.isBathroomPrivate() != roomToUpdate.get().isBathroomPrivate()) {
-                roomToUpdate.get().setBathroomPrivate(request.isBathroomPrivate());
+            if(request.getIsBathroomPrivate() != null) {
+                roomToUpdate.get().setIsBathroomPrivate(request.getIsBathroomPrivate());
             }
             if(request.getAdditionalAmenities() != null){
                 roomToUpdate.get().setAdditionalAmenities(request.getAdditionalAmenities());

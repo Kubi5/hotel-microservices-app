@@ -5,8 +5,10 @@ import com.kubis.microservices.rooms.repository.CustomerRepository;
 import com.kubis.microservices.rooms.request.CustomerRequest;
 import com.kubis.microservices.rooms.utils.Security;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,12 +19,16 @@ public class CustomerService {
     private final CustomerRepository customerRepository;
 
     public Long addCustomer(CustomerRequest request){
+        if(request.getRole() == null){
+            request.setRole("user");
+        }
         CustomerModel customerModel = CustomerModel.builder()
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
                 .phoneNumber(request.getPhoneNumber())
                 .email(request.getEmail())
                 .password(Security.hashPassword(request.getPassword()))
+                .role(request.getRole())
                 .build();
         return customerRepository.save(customerModel).getId();
     }
@@ -63,5 +69,11 @@ public class CustomerService {
         }
 
         return customerToUpdate;
+    }
+
+    public boolean customerDataCorrect(String email, String password){
+        CustomerModel customer = customerRepository.findByEmail(email);
+
+        return customer != null && BCrypt.checkpw(password.getBytes(StandardCharsets.UTF_8),customer.getPassword());
     }
 }

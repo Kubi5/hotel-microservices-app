@@ -13,6 +13,6 @@ public class RoomRequest {
     private int maxPeopleNumber;
     private double price;
     private List<String> availableBeds;
-    private boolean isBathroomPrivate;
+    private Boolean isBathroomPrivate;
     private List<String> additionalAmenities;
 }

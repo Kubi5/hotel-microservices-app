@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/app/ms-apiGateway/apiGateway.iml" filepath="$PROJECT_DIR$/app/ms-apiGateway/apiGateway.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/ms-customers/customers.iml" filepath="$PROJECT_DIR$/app/ms-customers/customers.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/ms-eureka/eureka.iml" filepath="$PROJECT_DIR$/app/ms-eureka/eureka.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/hotel-microservices-app.iml" filepath="$PROJECT_DIR$/app/hotel-microservices-app.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/ms-rooms/rooms.iml" filepath="$PROJECT_DIR$/app/ms-rooms/rooms.iml" />
     </modules>
