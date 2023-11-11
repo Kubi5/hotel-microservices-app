@@ -13,6 +13,7 @@
         <module>ms-rooms</module>
         <module>ms-eureka</module>
         <module>ms-apiGateway</module>
+        <module>ms-reservations</module>
     </modules>
 
     <build>

@@ -76,4 +76,8 @@ public class CustomerService {
 
         return customer != null && BCrypt.checkpw(password.getBytes(StandardCharsets.UTF_8),customer.getPassword());
     }
+
+    public CustomerModel getCustomerByEmail(String email) {
+        return customerRepository.findByEmail(email);
+    }
 }

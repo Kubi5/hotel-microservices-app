@@ -20,6 +20,7 @@ public class GatewayConfig {
                 .route("login", r -> r.path("/login").filters(f -> f.filter(filter)).uri("lb://ms-customers"))
                 .route("customers", r -> r.path("/customers/**").filters(f -> f.filter(filter)).uri("lb://ms-customers"))
                 .route("rooms", r -> r.path("/rooms/**").filters(f -> f.filter(filter)).uri("lb://ms-rooms"))
+                .route("reservations", r -> r.path("/reservations/**").filters(f -> f.filter(filter)).uri("lb://ms-reservations"))
                 .build();
     }
 

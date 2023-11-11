@@ -48,9 +48,9 @@ private final JwtUtil jwtUtil;
         return new ResponseEntity<>(customerService.getCustomers(), HttpStatus.OK);
     }
 
-    @GetMapping("/customers/{id}")
-    public ResponseEntity<Optional<CustomerModel>> getCustomerById(@PathVariable("id") Long customerId){
-        return new ResponseEntity<>(customerService.getCustomerById(customerId), HttpStatus.OK);
+    @GetMapping("/customers/{email}")
+    public ResponseEntity<CustomerModel> getCustomerByEmail(@PathVariable("email") String email){
+        return new ResponseEntity<>(customerService.getCustomerByEmail(email),HttpStatus.OK);
     }
 
     @DeleteMapping("/customers/{id}")
@@ -63,6 +63,7 @@ private final JwtUtil jwtUtil;
     public ResponseEntity<Optional<CustomerModel>> updateCustomer(@PathVariable("id") Long customerId, @RequestBody CustomerRequest request){
         return new ResponseEntity<>(customerService.updateCustomer(customerId, request), HttpStatus.OK);
     }
+
 
 
 }
