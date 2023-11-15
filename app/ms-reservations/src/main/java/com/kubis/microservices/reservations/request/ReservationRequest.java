@@ -11,7 +11,7 @@ import java.util.Date;
 @Setter
 @AllArgsConstructor
 public class ReservationRequest {
-    private Long roomId;
+    private long roomId;
     private int numberOfPeople;
     private String reservationStartDate;
     private String reservationEndDate;

@@ -34,7 +34,7 @@ public class JwtAuthenticationFilter implements GatewayFilter {
         if (isApiSecured.test(request)) {
             if (!request.getHeaders().containsKey("Authorization")) {
                 ServerHttpResponse response = exchange.getResponse();
-                response.setStatusCode(HttpStatus.FORBIDDEN);
+                response.setStatusCode(HttpStatus.UNAUTHORIZED);
                 return response.setComplete();
             }
 

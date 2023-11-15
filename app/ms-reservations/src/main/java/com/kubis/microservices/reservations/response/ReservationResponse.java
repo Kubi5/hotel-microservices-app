@@ -15,7 +15,7 @@ import java.util.Date;
 @Getter
 @Setter
 public class ReservationResponse {
-    private long id;
+    private long reservationId;
     private long customerId;
     private long roomId;
     private LocalDate reservationStartDate;

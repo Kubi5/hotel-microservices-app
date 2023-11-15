@@ -10,4 +10,5 @@ import java.util.List;
 public interface ReservationRepository extends CrudRepository <ReservationModel, Long> {
     List<ReservationModel> findAll();
     List<ReservationModel> findByRoomId(long roomId);
+
 }

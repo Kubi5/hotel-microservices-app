@@ -23,22 +23,22 @@ public class RoomService {
                 .isBathroomPrivate(request.getIsBathroomPrivate())
                 .additionalAmenities(request.getAdditionalAmenities())
                 .build();
-        return roomRepository.save(roomModel).getId();
+        return roomRepository.save(roomModel).getRoomId();
     }
 
     public List<RoomModel> getRooms(){
         return roomRepository.findAll();
     }
 
-    public Optional<RoomModel> getRoomById(Long id){
+    public Optional<RoomModel> getRoomById(long id){
         return roomRepository.findById(id);
     }
 
-    public void deleteRoom(Long id){
+    public void deleteRoom(long id){
         roomRepository.deleteById(id);
     }
 
-    public Optional<RoomModel> updateRoom(Long id, RoomRequest request){
+    public Optional<RoomModel> updateRoom(long id, RoomRequest request){
         Optional<RoomModel> roomToUpdate = roomRepository.findById(id);
 
         if(roomToUpdate.isPresent()){

@@ -5,23 +5,18 @@ import com.kubis.microservices.reservations.clients.RoomClient;
 import com.kubis.microservices.reservations.model.ReservationModel;
 import com.kubis.microservices.reservations.repository.ReservationRepository;
 import com.kubis.microservices.reservations.request.ReservationRequest;
+import com.kubis.microservices.reservations.request.SearchRequest;
 import com.kubis.microservices.reservations.response.ReservationResponse;
+import com.kubis.microservices.reservations.response.RoomResponse;
 import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.TimeZone;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -31,22 +26,20 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final CustomerClient customerClient;
     private final RoomClient roomCLient;
-    private LocalDate startOfReservation;
-    private LocalDate endOfReservation;
     @Value("${jwt.secret}")
     private String jwtSecret;
 
     public ReservationResponse addReservation(String token, ReservationRequest request){
 
-        startOfReservation = dateFormationAndParsing(request.getReservationStartDate());
-        endOfReservation = dateFormationAndParsing(request.getReservationEndDate());
+        LocalDate startOfReservation = dateFormationAndParsing(request.getReservationStartDate());
+        LocalDate endOfReservation = dateFormationAndParsing(request.getReservationEndDate());
 
-        if(reservationDateIsNotTaken(request.getRoomId())) {
-            long reservationId = reservationRepository.save(reservationDataPreparation(token, request)).getId();
+        if(reservationDateIsNotTaken(request.getRoomId(), startOfReservation, endOfReservation)) {
+            long reservationId = reservationRepository.save(reservationDataPreparation(token, request)).getReservationId();
 
             return ReservationResponse.builder()
-                    .id(reservationId)
-                    .customerId(customerClient.getCustomerByEmail(getEmailFromToken(token)).getId())
+                    .reservationId(reservationId)
+                    .customerId(customerClient.getCustomerByEmail(getEmailFromToken(token)).getCustomerId())
                     .roomId(request.getRoomId())
                     .reservationStartDate(startOfReservation)
                     .reservationEndDate(endOfReservation)
@@ -57,10 +50,59 @@ public class ReservationService {
         }
         return null;
     }
+    public List<ReservationModel> getReservations(){
+        return reservationRepository.findAll();
+    }
+
+    public Optional<ReservationModel> getReservationById(long id){
+        return reservationRepository.findById(id);
+    }
+
+    public List<RoomResponse> searchForRoomsWithCriteria(SearchRequest request){
+
+        LocalDate startOfReservation = dateFormationAndParsing(request.getReservationStartDate());
+        LocalDate endOfReservation = dateFormationAndParsing(request.getReservationEndDate());
+
+        List<RoomResponse> rooms = roomCLient.getRooms();
+
+        List<RoomResponse> roomsWhichMeetRoomCriteria = filterRoomsByRoomsProperties(request, rooms);
+
+        return filterRoomsWithNoDateConflict(roomsWhichMeetRoomCriteria,startOfReservation,endOfReservation);
+
+    }
+
+    private List<RoomResponse> filterRoomsWithNoDateConflict(List<RoomResponse> rooms, LocalDate startOfReservation, LocalDate endOfReservation){
+        return rooms.stream().filter(x -> {
+            List<ReservationModel> reservationModels = reservationRepository.findByRoomId(x.getRoomId());
+
+            return reservationModels.stream()
+                    .allMatch(reservation ->
+                            (endOfReservation.isBefore(reservation.getReservationStartDate()) ||
+                                    endOfReservation.isEqual(reservation.getReservationStartDate()))
+                                    ||
+                                    (startOfReservation.isAfter(reservation.getReservationEndDate())
+                                            || startOfReservation.isEqual(reservation.getReservationEndDate()))
+                    );
+        }).collect(Collectors.toList());
+    }
+
+    private List<RoomResponse> filterRoomsByRoomsProperties(SearchRequest request, List<RoomResponse> rooms){
+        return rooms.stream()
+                .filter(x -> x.getMaxPeopleNumber() >= request.getNumberOfPeople()
+                        && x.getPrice() >= request.getMinPossiblePricePerDay()
+                        && x.getPrice() <= request.getMaxPossiblePricePerDay()
+                        && x.getIsBathroomPrivate() == request.getIsBathroomPrivate()
+                        && new HashSet<>(x.getAvailableBeds()).containsAll(request.getSelectedBeds())
+                        && new HashSet<>(x.getAdditionalAmenities()).containsAll(request.getSelectedAdditionalAmenities())).toList();
+    }
 
     private ReservationModel reservationDataPreparation(String token, ReservationRequest request){
+
+        LocalDate startOfReservation = dateFormationAndParsing(request.getReservationStartDate());
+        LocalDate endOfReservation = dateFormationAndParsing(request.getReservationEndDate());
+
         return ReservationModel.builder()
-                .customerId(customerClient.getCustomerByEmail(getEmailFromToken(token)).getId())
+                .customerId(customerClient.getCustomerByEmail(getEmailFromToken(token)).getCustomerId())
                 .roomId(request.getRoomId())
                 .reservationStartDate(startOfReservation)
                 .reservationEndDate(endOfReservation)
@@ -70,7 +112,7 @@ public class ReservationService {
                 .build();
     }
 
-    private boolean reservationDateIsNotTaken(long roomId){
+    private boolean reservationDateIsNotTaken(long roomId, LocalDate startOfReservation, LocalDate endOfReservation){
         List<ReservationModel> currentReservations = reservationRepository.findByRoomId(roomId);
 
         long numberOfCurrentReservationOnChosenDate = currentReservations.stream()
@@ -90,7 +132,7 @@ public class ReservationService {
         return LocalDate.parse(date, formatter);
     }
 
-    private double calculatePriceOfReservation(Long roomId, LocalDate reservationStart, LocalDate reservationEnd){
+    private double calculatePriceOfReservation(long roomId, LocalDate reservationStart, LocalDate reservationEnd){
         long numberOfDaysSpent = ChronoUnit.DAYS.between(reservationStart, reservationEnd);
 
         return roomCLient.getRoomById(roomId).getPrice() * (int)numberOfDaysSpent;

@@ -8,7 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class CustomerResponse {
-    private long id;
+    private long customerId;
     private String email;
     private String hashedPassword;
     private String firstName;

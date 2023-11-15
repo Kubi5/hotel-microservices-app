@@ -10,7 +10,7 @@ import java.util.List;
 @Getter
 @Setter
 public class RoomResponse {
-    private long id;
+    private long roomId;
     private int maxPeopleNumber;
     private double price;
     private List<String> availableBeds;

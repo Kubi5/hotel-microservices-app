@@ -10,6 +10,10 @@ import com.kubis.microservices.rooms.utils.JwtUtil;
 import com.kubis.microservices.rooms.utils.Security;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -37,20 +41,54 @@ private final JwtUtil jwtUtil;
     public ResponseEntity<String> verifyLoginData(@RequestBody LoginRequest request){
         if(customerService.customerDataCorrect(request.getEmail(), request.getPassword())){
             String token = jwtUtil.generateToken(request.getEmail());
-            return new ResponseEntity<>(token, HttpStatus.CREATED);
+            return new ResponseEntity<>(token, HttpStatus.OK);
 
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     @GetMapping("/customers")
-    public ResponseEntity<List<CustomerModel>> getCustomers(){
-        return new ResponseEntity<>(customerService.getCustomers(), HttpStatus.OK);
+    public ResponseEntity<CollectionModel<EntityModel<CustomerModel>>> getCustomers(){
+        List<CustomerModel> customers = customerService.getCustomers();
+
+        List<EntityModel<CustomerModel>> customersModels = customers.stream()
+                .map(customer -> {
+                    Link selfLink = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(CustomerController.class).getCustomers())
+                            .slash(customer.getEmail())
+                            .withSelfRel();
+
+                    String modifiedUri = selfLink.getHref().replaceFirst("http://\\d+\\.\\d+\\.\\d+\\.\\d+:\\d+", "http://localhost:9091");
+
+                    Link modifiedLink = Link.of(modifiedUri, selfLink.getRel());
+
+                    return EntityModel.of(customer, modifiedLink);
+
+                }).toList();
+
+        Link collectionLink = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(CustomerController.class).getCustomers())
+                .withRel("All-customers");
+
+        String modifiedUri = collectionLink.getHref().replaceFirst("http://\\d+\\.\\d+\\.\\d+\\.\\d+:\\d+", "http://localhost:9091");
+        Link modifiedLink = Link.of(modifiedUri, collectionLink.getRel());
+
+        return new ResponseEntity<>(CollectionModel.of(customersModels,modifiedLink), HttpStatus.OK);
     }
 
     @GetMapping("/customers/{email}")
-    public ResponseEntity<CustomerModel> getCustomerByEmail(@PathVariable("email") String email){
-        return new ResponseEntity<>(customerService.getCustomerByEmail(email),HttpStatus.OK);
+    public ResponseEntity<EntityModel<CustomerModel>> getCustomerByEmail(@PathVariable("email") String email){
+        Optional<CustomerModel> customer = customerService.getCustomerByEmail(email);
+
+        if(customer.isPresent()) {
+            Link link = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(CustomerController.class).getCustomerByEmail(email))
+                    .withSelfRel();
+
+            String modifiedUri = link.getHref().replaceFirst("http://\\d+\\.\\d+\\.\\d+\\.\\d+:\\d+", "http://localhost:9091");
+
+            Link modifiedLink = Link.of(modifiedUri, link.getRel());
+
+            return new ResponseEntity<>(EntityModel.of(customer.get(),modifiedLink), HttpStatus.OK);
+        }
+        return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
     }
 
     @DeleteMapping("/customers/{id}")

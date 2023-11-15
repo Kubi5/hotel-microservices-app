@@ -30,22 +30,22 @@ public class CustomerService {
                 .password(Security.hashPassword(request.getPassword()))
                 .role(request.getRole())
                 .build();
-        return customerRepository.save(customerModel).getId();
+        return customerRepository.save(customerModel).getCustomerId();
     }
 
     public List<CustomerModel> getCustomers(){
         return customerRepository.findAll();
     }
 
-    public Optional<CustomerModel> getCustomerById(Long id){
+    public Optional<CustomerModel> getCustomerById(long id){
         return customerRepository.findById(id);
     }
 
-    public void deleteCustomer(Long customerId){
+    public void deleteCustomer(long customerId){
         customerRepository.deleteById(customerId);
     }
 
-    public Optional<CustomerModel> updateCustomer(Long id, CustomerRequest request){
+    public Optional<CustomerModel> updateCustomer(long id, CustomerRequest request){
         Optional<CustomerModel> customerToUpdate = customerRepository.findById(id);
 
         if(customerToUpdate.isPresent()) {
@@ -72,12 +72,15 @@ public class CustomerService {
     }
 
     public boolean customerDataCorrect(String email, String password){
-        CustomerModel customer = customerRepository.findByEmail(email);
+        Optional<CustomerModel> customer = customerRepository.findByEmail(email);
 
-        return customer != null && BCrypt.checkpw(password.getBytes(StandardCharsets.UTF_8),customer.getPassword());
+        if(customer.isPresent()) {
+            return BCrypt.checkpw(password.getBytes(StandardCharsets.UTF_8), customer.get().getPassword());
+        }
+        return false;
     }
 
-    public CustomerModel getCustomerByEmail(String email) {
+    public Optional<CustomerModel> getCustomerByEmail(String email) {
         return customerRepository.findByEmail(email);
     }
 }

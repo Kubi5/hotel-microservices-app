@@ -18,7 +18,7 @@ import java.util.Date;
 public class ReservationModel {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    private long reservationId;
     @NotNull
     private long customerId;
     @NotNull

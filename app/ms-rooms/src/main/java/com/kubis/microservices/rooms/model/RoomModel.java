@@ -2,6 +2,7 @@ package com.kubis.microservices.rooms.model;
 
 
 import lombok.*;
+import org.springframework.hateoas.RepresentationModel;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -16,7 +17,7 @@ import java.util.List;
 public class RoomModel {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    private long roomId;
     @NotNull
     private int maxPeopleNumber;
     @NotNull

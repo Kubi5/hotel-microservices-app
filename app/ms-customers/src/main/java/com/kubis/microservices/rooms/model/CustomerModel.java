@@ -20,7 +20,7 @@ import javax.validation.constraints.Size;
 public class CustomerModel {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    private long customerId;
     @NotNull
     @Pattern(regexp = Security.EMAIL_REGEX, message = "Entered email is in the wrong format")
     private String email;
