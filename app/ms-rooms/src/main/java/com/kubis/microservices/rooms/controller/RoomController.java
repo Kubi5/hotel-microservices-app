@@ -26,14 +26,16 @@ public class RoomController{
 private final RoomService roomService;
 
     @PostMapping("/rooms")
-    public ResponseEntity<RoomResponse> addRoom(@RequestBody RoomRequest request){
+    public ResponseEntity<RoomResponse> addRoom(@RequestHeader("Authorization") String token, @RequestBody RoomRequest request){
+        if(roomService.senderIsAdmin(token)) {
+            Long roomId = roomService.addRoom(request);
+            log.info("New room with id: " + roomId + " was added");
 
-        Long roomId = roomService.addRoom(request);
-        log.info("New room with id: " + roomId + " was added");
-
-        return new ResponseEntity<>(new RoomResponse(roomId, request.getMaxPeopleNumber(),
-                request.getPrice(), request.getAvailableBeds(), request.getIsBathroomPrivate(),
-                request.getAdditionalAmenities()), HttpStatus.CREATED);
+            return new ResponseEntity<>(new RoomResponse(roomId, request.getMaxPeopleNumber(),
+                    request.getPrice(), request.getAvailableBeds(), request.getIsBathroomPrivate(),
+                    request.getAdditionalAmenities()), HttpStatus.CREATED);
+        }
+        return new ResponseEntity<>(HttpStatus.FORBIDDEN);
     }
 
 //    @GetMapping("/rooms")
@@ -89,14 +91,20 @@ private final RoomService roomService;
 
 
     @DeleteMapping("/rooms/{id}")
-    public ResponseEntity<String> deleteRoom(@PathVariable("id") Long roomId){
-        roomService.deleteRoom(roomId);
-        return new ResponseEntity<>("Successfully Deleted Room with id: " + roomId, HttpStatus.OK);
+    public ResponseEntity<String> deleteRoom(@PathVariable("id") Long roomId, @RequestHeader("Authorization") String token){
+        if(roomService.senderIsAdmin(token)) {
+            roomService.deleteRoom(roomId);
+            return new ResponseEntity<>("Successfully Deleted Room with id: " + roomId, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.FORBIDDEN);
     }
 
     @PatchMapping("/rooms/{id}")
-    public ResponseEntity<Optional<RoomModel>> updateRoom(@PathVariable("id") Long roomId, @RequestBody RoomRequest request){
-        return new ResponseEntity<>(roomService.updateRoom(roomId, request), HttpStatus.OK);
+    public ResponseEntity<Optional<RoomModel>> updateRoom(@PathVariable("id") Long roomId, @RequestBody RoomRequest request, @RequestHeader("Authorization") String token){
+        if(roomService.senderIsAdmin(token)) {
+            return new ResponseEntity<>(roomService.updateRoom(roomId, request), HttpStatus.OK);
+        }
+        return  new ResponseEntity<>(HttpStatus.FORBIDDEN);
     }
 
 

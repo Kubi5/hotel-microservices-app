@@ -6,8 +6,10 @@ import com.kubis.microservices.reservations.model.ReservationModel;
 import com.kubis.microservices.reservations.repository.ReservationRepository;
 import com.kubis.microservices.reservations.request.ReservationRequest;
 import com.kubis.microservices.reservations.request.SearchRequest;
+import com.kubis.microservices.reservations.response.CustomerResponse;
 import com.kubis.microservices.reservations.response.ReservationResponse;
 import com.kubis.microservices.reservations.response.RoomResponse;
+import feign.FeignException;
 import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,13 +41,14 @@ public class ReservationService {
 
             return ReservationResponse.builder()
                     .reservationId(reservationId)
-                    .customerId(customerClient.getCustomerByEmail(getEmailFromToken(token)).getCustomerId())
+                    .customerId(customerClient.getCustomerByEmail(getEmailFromToken(token),token).getCustomerId())
                     .roomId(request.getRoomId())
                     .reservationStartDate(startOfReservation)
                     .reservationEndDate(endOfReservation)
                     .reservationConfirmedDate(new Date())
                     .numberOfPeople(request.getNumberOfPeople())
                     .priceOfReservation(calculatePriceOfReservation(request.getRoomId(), startOfReservation, endOfReservation))
+                    .isParkingSpaceIncluded(request.getIsParkingSpaceIncluded())
                     .build();
         }
         return null;
@@ -70,6 +73,26 @@ public class ReservationService {
         return filterRoomsWithNoDateConflict(roomsWhichMeetRoomCriteria,startOfReservation,endOfReservation);
 
     }
+
+    public List<ReservationModel> getReservationsByCustomerId(String token){
+        return reservationRepository.findByCustomerId(customerClient.getCustomerByEmail(getEmailFromToken(token), token).getCustomerId());
+    }
+
+    public boolean senderIsAdmin(String token) {
+        String email = getEmailFromToken(token);
+
+        if (email != null) {
+            try {
+                CustomerResponse customer = customerClient.getCustomerByEmail(email, token);
+
+                return "admin".equals(customer.getRole());
+            } catch (FeignException.Forbidden e) {
+                return false;
+            }
+        }
+        return false;
+    }
+
 
     private List<RoomResponse> filterRoomsWithNoDateConflict(List<RoomResponse> rooms, LocalDate startOfReservation, LocalDate endOfReservation){
         return rooms.stream().filter(x -> {
@@ -102,13 +125,14 @@ public class ReservationService {
         LocalDate endOfReservation = dateFormationAndParsing(request.getReservationEndDate());
 
         return ReservationModel.builder()
-                .customerId(customerClient.getCustomerByEmail(getEmailFromToken(token)).getCustomerId())
+                .customerId(customerClient.getCustomerByEmail(getEmailFromToken(token), token).getCustomerId())
                 .roomId(request.getRoomId())
                 .reservationStartDate(startOfReservation)
                 .reservationEndDate(endOfReservation)
                 .reservationConfirmedDate(new Date())
                 .numberOfPeople(request.getNumberOfPeople())
                 .priceOfReservation(calculatePriceOfReservation(request.getRoomId(), startOfReservation, endOfReservation))
+                .isParkingSpaceIncluded(request.getIsParkingSpaceIncluded())
                 .build();
     }
 

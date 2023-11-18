@@ -1,4 +1,4 @@
-package com.kubis.microservices.rooms.request;
+package com.kubis.microservices.customers.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

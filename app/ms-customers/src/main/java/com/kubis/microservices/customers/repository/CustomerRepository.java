@@ -1,6 +1,6 @@
-package com.kubis.microservices.rooms.repository;
+package com.kubis.microservices.customers.repository;
 
-import com.kubis.microservices.rooms.model.CustomerModel;
+import com.kubis.microservices.customers.model.CustomerModel;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 

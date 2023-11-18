@@ -15,4 +15,5 @@ public class ReservationRequest {
     private int numberOfPeople;
     private String reservationStartDate;
     private String reservationEndDate;
+    private Boolean isParkingSpaceIncluded;
 }

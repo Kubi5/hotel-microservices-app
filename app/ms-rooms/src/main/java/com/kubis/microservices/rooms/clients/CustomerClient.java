@@ -1,6 +1,6 @@
-package com.kubis.microservices.reservations.clients;
+package com.kubis.microservices.rooms.clients;
 
-import com.kubis.microservices.reservations.response.CustomerResponse;
+import com.kubis.microservices.rooms.response.CustomerResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

@@ -33,6 +33,8 @@ public class ReservationModel {
     private int numberOfPeople;
     @NotNull
     private double priceOfReservation;
+    @NotNull
+    private Boolean isParkingSpaceIncluded;
 
 
 }

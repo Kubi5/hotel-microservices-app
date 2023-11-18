@@ -1,4 +1,4 @@
-package com.kubis.microservices.rooms;
+package com.kubis.microservices.customers;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

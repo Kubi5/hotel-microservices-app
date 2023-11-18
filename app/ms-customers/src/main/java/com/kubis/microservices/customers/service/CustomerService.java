@@ -1,10 +1,12 @@
-package com.kubis.microservices.rooms.service;
+package com.kubis.microservices.customers.service;
 
-import com.kubis.microservices.rooms.model.CustomerModel;
-import com.kubis.microservices.rooms.repository.CustomerRepository;
-import com.kubis.microservices.rooms.request.CustomerRequest;
-import com.kubis.microservices.rooms.utils.Security;
+import com.kubis.microservices.customers.repository.CustomerRepository;
+import com.kubis.microservices.customers.request.CustomerRequest;
+import com.kubis.microservices.customers.model.CustomerModel;
+import com.kubis.microservices.customers.utils.Security;
+import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +19,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class CustomerService {
     private final CustomerRepository customerRepository;
+    @Value("${jwt.secret}")
+    private String jwtSecret;
 
     public Long addCustomer(CustomerRequest request){
         if(request.getRole() == null){
@@ -82,5 +86,44 @@ public class CustomerService {
 
     public Optional<CustomerModel> getCustomerByEmail(String email) {
         return customerRepository.findByEmail(email);
+    }
+
+    public boolean senderIsAdmin(String token) {
+        String email = getEmailFromToken(token);
+
+        if (email != null) {
+            Optional<CustomerModel> customerOptional = customerRepository.findByEmail(email);
+
+            if (customerOptional.isPresent()) {
+                CustomerModel customer = customerOptional.get();
+                return "admin".equals(customer.getRole());
+            }
+        }
+        return false;
+    }
+
+    public boolean senderIsUserWithPermissions(String token, String headerEmail){
+        String email = getEmailFromToken(token);
+
+        if (email != null) {
+            Optional<CustomerModel> customerOptional = customerRepository.findByEmail(email);
+
+            if (customerOptional.isPresent()) {
+                CustomerModel customer = customerOptional.get();
+                return headerEmail.equals(customer.getEmail());
+            }
+        }
+        return false;
+    }
+    private String getEmailFromToken(String token) {
+        if (token.startsWith("Bearer ")) {
+            token = token.substring(7);
+        }
+        try {
+            return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getSubject();
+        } catch (Exception e) {
+            System.out.println(e.getMessage() + " => " + e);
+        }
+        return null;
     }
 }

@@ -24,4 +24,5 @@ public class ReservationResponse {
     private Date reservationConfirmedDate;
     private int numberOfPeople;
     private double priceOfReservation;
+    private Boolean isParkingSpaceIncluded;
 }

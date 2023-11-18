@@ -1,4 +1,4 @@
-package com.kubis.microservices.rooms.utils;
+package com.kubis.microservices.customers.utils;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
